@@ -1,0 +1,14 @@
+name: pylandstats
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pip
+  - pip:
+    - urban-footprinter==0.0.1
+  - python=3
+  - matplotlib
+  - numpy
+  - rasterio
+  - scipy
+  - shapely
