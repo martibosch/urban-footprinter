@@ -13,6 +13,7 @@ class Test(unittest.TestCase):
         with rio.open(self.raster_filepath) as src:
             self.raster_arr = src.read(1)
             self.res = src.res[0]  # only square pixels are supported
+            self.transform = src.transform
         self.kernel_radius = 500
         self.urban_threshold = .25
         self.urban_classes = list(range(8))
@@ -69,3 +70,18 @@ class Test(unittest.TestCase):
             self.raster_filepath, self.kernel_radius, self.urban_threshold,
             urban_classes=self.urban_classes)
         self.assertIsInstance(urban_mask, base.BaseGeometry)
+
+    def test_class(self):
+        # test that when initializing the `UrbanFootprinter` class with an
+        # ndarray we can provide the affine transform if we want to use the
+        # `compute_footprint_mask_shp` method
+        for uf in (ufp.UrbanFootprinter(self.raster_arr, self.urban_classes,
+                                        self.res),
+                   ufp.UrbanFootprinter(self.raster_filepath,
+                                        self.urban_classes)):
+            for transform in (self.transform, None):
+                uf.compute_footprint_mask_shp(self.kernel_radius,
+                                              self.urban_threshold,
+                                              largest_patch_only=True,
+                                              buffer_dist=1000,
+                                              transform=transform)
