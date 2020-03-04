@@ -4,7 +4,7 @@ from rasterio import features
 from scipy import ndimage as ndi
 from shapely import geometry
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 __all__ = [
     'UrbanFootprinter', 'urban_footprint_mask', 'urban_footprint_mask_shp'
