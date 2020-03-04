@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 import rasterio as rio
-from shapely.geometry import base
+from shapely import geometry
 
 import urban_footprinter as ufp
 
@@ -40,12 +40,13 @@ class Test(unittest.TestCase):
                           self.urban_threshold,
                           urban_classes=self.urban_classes)
 
-        # test that not providing urban classes raises a ValueError
-        self.assertRaises(ValueError, ufp.urban_footprint_mask,
-                          self.raster_filepath, self.kernel_radius,
-                          self.urban_threshold)
+        # # test that not providing urban classes when the array is not boolean
+        # # raises a ValueError
+        # self.assertRaises(ValueError, ufp.urban_footprint_mask,
+        #                   self.raster_filepath, self.kernel_radius,
+        #                   self.urban_threshold)
 
-        # test that getting more than the largest patch must return at least
+        # test that getting the two largest patches must return at least
         # the same number of pixels
         num_pixels = np.sum(urban_mask)
         self.assertGreaterEqual(
@@ -54,8 +55,18 @@ class Test(unittest.TestCase):
                                          self.kernel_radius,
                                          self.urban_threshold,
                                          urban_classes=self.urban_classes,
-                                         largest_patch_only=False)),
-            num_pixels)
+                                         num_patches=2)), num_pixels)
+        # test the same but when getting all the patches (this can be done by
+        # providing `None` or a value lower than 1 as `num_patches`)
+        for num_patches in (None, -1, 0):
+            self.assertGreaterEqual(
+                np.sum(
+                    ufp.urban_footprint_mask(self.raster_filepath,
+                                             self.kernel_radius,
+                                             self.urban_threshold,
+                                             urban_classes=self.urban_classes,
+                                             num_patches=num_patches)),
+                num_pixels)
         # test the same but for a positive buffer dist
         self.assertGreaterEqual(
             np.sum(
@@ -65,11 +76,12 @@ class Test(unittest.TestCase):
                                          urban_classes=self.urban_classes,
                                          buffer_dist=1000)), num_pixels)
 
-        # test that `urban_footprint_mask_shp` returns a shapely geometry
+        # test that `urban_footprint_mask_shp` returns a shapely
+        # GeometryCollection
         urban_mask = ufp.urban_footprint_mask_shp(
             self.raster_filepath, self.kernel_radius, self.urban_threshold,
             urban_classes=self.urban_classes)
-        self.assertIsInstance(urban_mask, base.BaseGeometry)
+        self.assertIsInstance(urban_mask, geometry.GeometryCollection)
 
     def test_class(self):
         # test that when initializing the `UrbanFootprinter` class with an
@@ -82,6 +94,5 @@ class Test(unittest.TestCase):
             for transform in (self.transform, None):
                 uf.compute_footprint_mask_shp(self.kernel_radius,
                                               self.urban_threshold,
-                                              largest_patch_only=True,
-                                              buffer_dist=1000,
+                                              num_patches=1, buffer_dist=1000,
                                               transform=transform)

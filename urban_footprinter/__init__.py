@@ -65,8 +65,9 @@ class UrbanFootprinter:
             kernel_pixel_len = 2 * kernel_pixel_radius + 1
 
             y, x = np.ogrid[-kernel_pixel_radius:kernel_pixel_len -
-                            kernel_pixel_radius, -kernel_pixel_radius:
-                            kernel_pixel_len - kernel_pixel_radius]
+                            kernel_pixel_radius,
+                            -kernel_pixel_radius:kernel_pixel_len -
+                            kernel_pixel_radius]
             mask = x * x + y * y <= kernel_pixel_radius * kernel_pixel_radius
 
             kernel = np.zeros((kernel_pixel_len, kernel_pixel_len),
@@ -82,7 +83,7 @@ class UrbanFootprinter:
             return urban_mask
 
     def compute_footprint_mask(self, kernel_radius, urban_threshold,
-                               largest_patch_only=True, buffer_dist=None):
+                               num_patches=1, buffer_dist=None):
         """
         Computes a boolean mask of the urban footprint of a given raster.
 
@@ -94,9 +95,11 @@ class UrbanFootprinter:
         urban_threshold : float from 0 to 1
             Proportion of neighboring (within the kernel) urban pixels after
             which a given pixel is considered urban.
-        largest_patch_only : boolean, default True
-            Whether the returned urban/non-urban mask should feature only the
-            largest urban patch.
+        num_patches : int, default 1
+            The number of urban patches that should be featured in the
+            returned urban/non-urban mask. If `None` or a value lower than one
+            is provided, the returned urban/non-urban mask will featuer all
+            the urban patches.
         buffer_dist : numeric, optional
             Distance to be buffered around the urban/non-urban mask. If no
             value is provided, no buffer is applied.
@@ -113,13 +116,20 @@ class UrbanFootprinter:
         urban_mask = convolution_result >= \
             urban_threshold * (kernel_pixel_len * kernel_pixel_len - 1)
 
-        if largest_patch_only:
+        if num_patches is not None and num_patches >= 1:
             # use the connected-component labelling to extract the largest
-            # contiguous urban patch
+            # contiguous urban patches
             label_arr = ndi.label(urban_mask, KERNEL_MOORE)[0]
-            cluster_label = np.argmax(
-                np.unique(label_arr, return_counts=True)[1][1:]) + 1
-            urban_mask = (label_arr == cluster_label)
+            # get the (pixel) counts of each urban patch label
+            labels, counts = np.unique(label_arr, return_counts=True)
+            # sort the urban patch label by (pixel) counts and delete the 0
+            # (which in `label_arr` always corresponds to the nodata values
+            # given the way `ndi.label` works
+            sorted_labels = labels[np.argsort(-counts)]
+            sorted_labels = sorted_labels[sorted_labels > 0]
+            # now let `urban_mask` include only the n-largest urban patches
+            # where n is `num_patches`
+            urban_mask = np.isin(label_arr, sorted_labels[:num_patches])
 
         if buffer_dist is not None:
             iterations = int(buffer_dist // self.res)
@@ -129,7 +139,7 @@ class UrbanFootprinter:
         return urban_mask.astype(np.uint8)
 
     def compute_footprint_mask_shp(self, kernel_radius, urban_threshold,
-                                   largest_patch_only=True, buffer_dist=None,
+                                   num_patches=1, buffer_dist=None,
                                    transform=None):
         """
         Computes a geometry of the urban footprint of a given raster.
@@ -142,9 +152,11 @@ class UrbanFootprinter:
         urban_threshold : float from 0 to 1
             Proportion of neighboring (within the kernel) urban pixels after
             which a given pixel is considered urban.
-        largest_patch_only : boolean, default True
-            Whether the returned urban/non-urban mask should feature only the
-            largest urban patch.
+        num_patches : int, default 1
+            The number of urban patches that should be featured in the
+            returned urban/non-urban mask. If `None` or a value lower than one
+            is provided, the returned urban/non-urban mask will featuer all
+            the urban patches.
         buffer_dist : numeric, optional
             Distance to be buffered around the urban/non-urban mask. If no
             value is provided, no buffer is applied.
@@ -155,12 +167,13 @@ class UrbanFootprinter:
 
         Returns
         -------
-        urban_mask_geom : geometry
+        urban_mask_geom : GeometryCollection
         """
 
-        urban_mask = self.compute_footprint_mask(
-            kernel_radius, urban_threshold,
-            largest_patch_only=largest_patch_only, buffer_dist=buffer_dist)
+        urban_mask = self.compute_footprint_mask(kernel_radius,
+                                                 urban_threshold,
+                                                 num_patches=num_patches,
+                                                 buffer_dist=buffer_dist)
 
         shapes_kws = {}
         if hasattr(self, 'transform'):
@@ -168,16 +181,15 @@ class UrbanFootprinter:
         if transform is not None:
             shapes_kws['transform'] = transform
 
-        return geometry.shape([
-            (geom, val)
-            for geom, val in features.shapes(urban_mask, **shapes_kws)
-            if val == 1
-        ][-1][0])
+        return geometry.GeometryCollection([
+            geometry.shape(geom) for geom, val in features.shapes(
+                urban_mask, mask=urban_mask, connectivity=8, **shapes_kws)
+        ])
 
 
 def urban_footprint_mask(raster, kernel_radius, urban_threshold,
-                         urban_classes=None, largest_patch_only=True,
-                         buffer_dist=None, res=None):
+                         urban_classes=None, num_patches=1, buffer_dist=None,
+                         res=None):
     """
     Computes a boolean mask of the urban footprint of a given raster.
 
@@ -196,9 +208,10 @@ def urban_footprint_mask(raster, kernel_radius, urban_threshold,
         Code or codes of the LULC classes that must be considered urban. Not
         needed if `raster` is already a boolean array of urban/non-urban LULC
         classes.
-    largest_patch_only : boolean, default True
-        Whether the returned urban/non-urban mask should feature only the
-        largest urban patch.
+    num_patches : int, default 1
+        The number of urban patches that should be featured in the returned
+        urban/non-urban mask. If `None` or a value lower than one is provided,
+        the returned urban/non-urban mask will featuer all the urban patches.
     buffer_dist : numeric, optional
         Distance to be buffered around the urban/non-urban mask. If no value is
         provided, no buffer is applied.
@@ -214,12 +227,12 @@ def urban_footprint_mask(raster, kernel_radius, urban_threshold,
     return UrbanFootprinter(raster, urban_classes,
                             res=res).compute_footprint_mask(
                                 kernel_radius, urban_threshold,
-                                largest_patch_only=largest_patch_only,
+                                num_patches=num_patches,
                                 buffer_dist=buffer_dist)
 
 
 def urban_footprint_mask_shp(raster, kernel_radius, urban_threshold,
-                             urban_classes=None, largest_patch_only=True,
+                             urban_classes=None, num_patches=1,
                              buffer_dist=None):
     """
     Computes a geometry of the urban footprint of a given raster.
@@ -237,9 +250,10 @@ def urban_footprint_mask_shp(raster, kernel_radius, urban_threshold,
         Code or codes of the LULC classes that must be considered urban. Not
         needed if `raster` is already a boolean array of urban/non-urban LULC
         classes.
-    largest_patch_only : boolean, default True
-        Whether the returned urban/non-urban mask should feature only the
-        largest urban patch.
+    num_patches : int, default 1
+        The number of urban patches that should be featured in the returned
+        urban/non-urban mask. If `None` or a value lower than one is provided,
+        the returned urban/non-urban mask will featuer all the urban patches.
     buffer_dist : numeric, optional
         Distance to be buffered around the urban/non-urban mask. If no value is
         provided, no buffer is applied.
@@ -249,5 +263,5 @@ def urban_footprint_mask_shp(raster, kernel_radius, urban_threshold,
     urban_mask_geom : geometry
     """
     return UrbanFootprinter(raster, urban_classes).compute_footprint_mask_shp(
-        kernel_radius, urban_threshold, largest_patch_only=largest_patch_only,
+        kernel_radius, urban_threshold, num_patches=num_patches,
         buffer_dist=buffer_dist)
