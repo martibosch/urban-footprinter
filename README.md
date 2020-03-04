@@ -23,12 +23,6 @@ To install use pip:
 
     $ pip install urban-footprinter
 
-
-Or clone the repo:
-
-    $ git clone https://github.com/martibosch/urban-footprinter.git
-    $ python setup.py install
-
 Then use it as:
 
 ```python
@@ -48,10 +42,11 @@ where
     help(ufp.urban_footprint_mask)
 
     Help on function urban_footprint_mask in module urban_footprinter:
-    
-    urban_footprint_mask(raster, kernel_radius, urban_threshold, urban_classes=None, largest_patch_only=True, buffer_dist=None, res=None)
+
+    urban_footprint_mask(raster, kernel_radius, urban_threshold, urban_classes=None, num_patches=1,
+                         buffer_dist=None, res=None)
         Computes a boolean mask of the urban footprint of a given raster.
-        
+    
         Parameters
         ----------
         raster : ndarray or str, file object or pathlib.Path object
@@ -67,16 +62,17 @@ where
             Code or codes of the LULC classes that must be considered urban. Not
             needed if `raster` is already a boolean array of urban/non-urban LULC
             classes.
-        largest_patch_only : boolean, default True
-            Whether the returned urban/non-urban mask should feature only the
-            largest urban patch.
+        num_patches : int, default 1
+            The number of urban patches that should be featured in the returned
+            urban/non-urban mask. If `None` or a value lower than one is provided,
+            the returned urban/non-urban mask will featuer all the urban patches.
         buffer_dist : numeric, optional
             Distance to be buffered around the urban/non-urban mask. If no value is
             provided, no buffer is applied.
         res : numeric, optional
             Resolution of the `raster` (assumes square pixels). Ignored if `raster`
             is a path to a geotiff.
-        
+
         Returns
         -------
         urban_mask : ndarray
