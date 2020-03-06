@@ -1,8 +1,10 @@
 [![PyPI version fury.io](https://badge.fury.io/py/urban-footprinter.svg)](https://pypi.python.org/pypi/urban-footprinter/)
+[![Documentation Status](https://readthedocs.org/projects/urban-footprinter/badge/?version=latest)](https://urban-footprinter.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.org/martibosch/urban-footprinter.svg?branch=master)](https://travis-ci.org/martibosch/urban-footprinter)
 [![Coverage Status](https://coveralls.io/repos/github/martibosch/urban-footprinter/badge.svg?branch=master)](https://coveralls.io/github/martibosch/urban-footprinter?branch=master)
 [![GitHub license](https://img.shields.io/github/license/martibosch/urban-footprinter.svg)](https://github.com/martibosch/urban-footprinter/blob/master/LICENSE)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/martibosch/urban-footprinter/master?filepath=notebooks/overview.ipynb)
+[![DOI](https://zenodo.org/badge/215518909.svg)](https://zenodo.org/badge/latestdoi/215518909)
 
 Urban footprinter
 ===============================
@@ -15,6 +17,19 @@ LULC | Convolution result | Computed urban extent
 
 The approach is built upon the methods used in the [Atlas of Urban Expansion](http://atlasofurbanexpansion.org/). The main idea is that a pixel is considered part of the urban extent depending on the proportion of built-up pixels that surround it. See the [notebook overview](https://github.com/martibosch/urban-footprinter/tree/master/notebooks/overview.ipynb) or [this blog post](https://martibosch.github.io/urban-footprinter/) for a more detailed description of the procedure.
 
+**Citation**: Bosch M. 2020. "Urban footprinter: a convolution-based approach to detect urban extents from raster data". Available from [https://github.com/martibosch/urban-footprinter](https://github.com/martibosch/urban-footprinter). Accessed: DD Month YYYY.
+
+An example BibTeX entry is:
+
+```bibtex
+@misc{bosch2020urban,
+  title={Urban footprinter: a convolution-based approach to detect urban extents from raster data},
+  author={Bosch, Mart\'{i}},
+  year={2020},
+  doi={10.5281/zenodo.3699310},
+  howpublished={Available from \url{https://github.com/martibosch/urban-footprinter}. Accessed: DD Month YYYY},
+}
+```
 
 Installation and usage
 ----------------------
