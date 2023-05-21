@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "urban-footprinter"
+version = "0.2.0"
+description = "A convolution-based approach to detect urban extents."
+readme = "README.md"
+authors = [
+    { name = "Martí Bosch", email = "marti.bosch@epfl.ch" },
+]
+license = { text = "GPL-3.0" }
+classifiers = [
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+requires-python = ">=3.8"
+dynamic = [
+	"dependencies"
+]
+
+[project.urls]
+Repository = "https://github.com/martibosch/urban-footprinter"
+
+[project.optional-dependencies]
+test = ["black", "coverage[toml]", "pytest", "pytest-cov", "python-dotenv", "ruff"]
+dev = ["build", "commitizen", "pre-commit", "pip", "toml", "tox", "twine"]
+doc = ["myst-parser", "sphinx"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+[tool.setuptools.packages.find]
+include = ["meteostations", "meteostations.*"]
+
+[tool.black]
+line-length = 88
+
+[tool.ruff]
+line-length = 88
+select = ["D", "E", "F", "I"]
+
+[tool.ruff.isort]
+known-first-party = ["urban_footprinter"]
+
+[tool.ruff.per-file-ignores]
+"**/__init__.py" = ["F401"]
+"tests/test_urban_footprinter.py" = ["D"]
+
+[tool.nbqa.addopts]
+ruff = [
+    "--ignore=D,I"
+]
+
+[tool.coverage.run]
+source = ["urban_footprinter"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "if self.debug:",
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "except ModuleNotFoundError",
+    "except ImportError",
+]
+ignore_errors = true
+omit = ["tests/*", "docs/conf.py"]

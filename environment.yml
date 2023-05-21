@@ -1,14 +1,9 @@
-name: pylandstats
+name: urban-footprinter
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - pip
   - pip:
-    - urban-footprinter==0.0.1
+    - -e .
+  - pre-commit
   - python=3
-  - matplotlib
-  - numpy
-  - rasterio
-  - scipy
-  - shapely
