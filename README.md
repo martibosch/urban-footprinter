@@ -1,9 +1,10 @@
 [![PyPI version fury.io](https://badge.fury.io/py/urban-footprinter.svg)](https://pypi.python.org/pypi/urban-footprinter/)
 [![Documentation Status](https://readthedocs.org/projects/urban-footprinter/badge/?version=latest)](https://urban-footprinter.readthedocs.io/en/latest/?badge=latest)
-[![Build Status](https://travis-ci.org/martibosch/urban-footprinter.svg?branch=master)](https://travis-ci.org/martibosch/urban-footprinter)
-[![Coverage Status](https://coveralls.io/repos/github/martibosch/urban-footprinter/badge.svg?branch=master)](https://coveralls.io/github/martibosch/urban-footprinter?branch=master)
-[![GitHub license](https://img.shields.io/github/license/martibosch/urban-footprinter.svg)](https://github.com/martibosch/urban-footprinter/blob/master/LICENSE)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/martibosch/urban-footprinter/master?filepath=notebooks/overview.ipynb)
+[![CI/CD](https://github.com/martibosch/urban-footprinter/actions/workflows/dev.yml/badge.svg)](https://github.com/martibosch/urban-footprinter/blob/main/.github/workflows/dev.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/martibosch/urban-footprinter/main.svg)](https://results.pre-commit.ci/latest/github/martibosch/urban-footprinter/main)
+[![codecov](https://codecov.io/gh/martibosch/urban-footprinter/branch/main/graph/badge.svg?token=H8PW6I8DY5)](https://codecov.io/gh/martibosch/urban-footprinter)
+[![GitHub license](https://img.shields.io/github/license/martibosch/urban-footprinter.svg)](https://github.com/martibosch/urban-footprinter/blob/main/LICENSE)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/martibosch/urban-footprinter/main?filepath=notebooks/overview.ipynb)
 [![DOI](https://zenodo.org/badge/215518909.svg)](https://zenodo.org/badge/latestdoi/215518909)
 
 # Urban footprinter
@@ -14,7 +15,7 @@ A reusable convolution-based approach to detect urban extents from raster datase
 | :----------------------------------------: | :-------------------------------------------------------------: | :--------------------------------------------------: |
 | ![LULC](notebooks/figures/zurich-lulc.png) | ![Convolution result](notebooks/figures/zurich-conv-result.png) | ![Urban extent](notebooks/figures/zurich-extent.png) |
 
-The approach is built upon the methods used in the [Atlas of Urban Expansion](http://atlasofurbanexpansion.org/). The main idea is that a pixel is considered part of the urban extent depending on the proportion of built-up pixels that surround it. See the [notebook overview](https://github.com/martibosch/urban-footprinter/tree/master/notebooks/overview.ipynb) or [this blog post](https://martibosch.github.io/urban-footprinter/) for a more detailed description of the procedure.
+The approach is built upon the methods used in the [Atlas of Urban Expansion](http://atlasofurbanexpansion.org/). The main idea is that a pixel is considered part of the urban extent depending on the proportion of built-up pixels that surround it. See the [notebook overview](https://github.com/martibosch/urban-footprinter/tree/main/notebooks/overview.ipynb) or [this blog post](https://martibosch.github.io/urban-footprinter/) for a more detailed description of the procedure.
 
 **Citation**: Bosch M. 2020. "Urban footprinter: a convolution-based approach to detect urban extents from raster data". Available from [https://github.com/martibosch/urban-footprinter](https://github.com/martibosch/urban-footprinter). Accessed: DD Month YYYY.
 
