@@ -1,6 +1,7 @@
 """Urban footprinter."""
 import numpy as np
 import rasterio as rio
+from pandas.api.types import is_list_like
 from rasterio import features
 from scipy import ndimage as ndi
 from shapely import geometry
@@ -44,7 +45,7 @@ class UrbanFootprinter:
         if urban_classes is None:
             # no need to use `np.copy` because of the `astype` below
             urban_lulc_arr = raster
-        if isinstance(urban_classes, (list, tuple)):
+        if is_list_like(urban_classes):
             urban_lulc_arr = np.isin(raster, urban_classes)
         else:
             urban_lulc_arr = raster == urban_classes
