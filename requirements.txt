@@ -1,4 +1,5 @@
 numpy >= 1.15
+opencv-python >= 4.0.0
 rasterio >= 1.0.0
 scipy >= 1.0.0
 shapely >= 1.0.0

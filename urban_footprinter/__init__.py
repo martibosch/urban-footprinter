@@ -1,4 +1,5 @@
 """Urban footprinter."""
+import cv2
 import numpy as np
 import rasterio as rio
 from pandas.api.types import is_list_like
@@ -106,7 +107,8 @@ class UrbanFootprinter:
             )
             kernel[mask] = 1
 
-            urban_mask = ndi.convolve(self.urban_lulc_arr, kernel)
+            # urban_mask = ndi.convolve(self.urban_lulc_arr, kernel)
+            urban_mask = cv2.filter2D(self.urban_lulc_arr, ddepth=-1, kernel=kernel)
 
             # cache the convolution result
             self._convolution_result_dict[kernel_radius] = urban_mask
