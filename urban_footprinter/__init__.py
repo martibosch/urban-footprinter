@@ -6,6 +6,8 @@ from rasterio import features
 from scipy import ndimage as ndi
 from shapely import geometry
 
+from urban_footprinter import settings
+
 __version__ = "0.2.0"
 
 __all__ = ["UrbanFootprinter", "urban_footprint_mask", "urban_footprint_mask_shp"]
@@ -16,7 +18,9 @@ KERNEL_MOORE = ndi.generate_binary_structure(2, 2)
 class UrbanFootprinter:
     """Urban footprinter."""
 
-    def __init__(self, raster, urban_classes=None, res=None):
+    def __init__(
+        self, raster, urban_classes=None, res=None, lulc_dtype=None, mask_dtype=None
+    ):
         """Initialize the urban footprinter.
 
         Parameters
@@ -31,6 +35,14 @@ class UrbanFootprinter:
         res : numeric, optional
             Resolution of the `raster` (assumes square pixels). Ignored if `raster` is a
             path to a geotiff.
+        lulc_dtype : str or numpy dtype, optional
+            Data type to be used for the LULC array. It may need to be higher than the
+            raster's original data type to avoid integer overflow when convolving the
+            LULC array. If not provided, the default value from
+            `settings.DEFAULT_LULC_DTYPE` is used.
+        mask_dtype : str or numpy dtype, optional
+            Data type to be used for the returned mask. If not provided, the default
+            value from `settings.DEFAULT_MASK_DTYPE` is used.
         """
         if isinstance(raster, np.ndarray):
             if res is None:
@@ -41,6 +53,12 @@ class UrbanFootprinter:
                 res = src.res[0]  # only square pixels are supported
                 self.transform = src.transform
         self.res = res
+        if lulc_dtype is None:
+            lulc_dtype = settings.DEFAULT_LULC_DTYPE
+        self.lulc_dtype = lulc_dtype
+        if mask_dtype is None:
+            mask_dtype = settings.DEFAULT_MASK_DTYPE
+        self.mask_dtype = mask_dtype
 
         if urban_classes is None:
             # no need to use `np.copy` because of the `astype` below
@@ -52,7 +70,7 @@ class UrbanFootprinter:
 
         # need to ensure a dtype that allows for high positive integers
         # (convolution results can be quite high)
-        self.urban_lulc_arr = urban_lulc_arr.astype(np.uint32)
+        self.urban_lulc_arr = urban_lulc_arr.astype(self.lulc_dtype)
 
         # init an empty dict to cache the convolution results of each kernel
         # radius
@@ -83,7 +101,9 @@ class UrbanFootprinter:
             ]
             mask = x * x + y * y <= kernel_pixel_radius * kernel_pixel_radius
 
-            kernel = np.zeros((kernel_pixel_len, kernel_pixel_len), dtype=np.uint32)
+            kernel = np.zeros(
+                (kernel_pixel_len, kernel_pixel_len), dtype=self.lulc_dtype
+            )
             kernel[mask] = 1
 
             urban_mask = ndi.convolve(self.urban_lulc_arr, kernel)
@@ -148,7 +168,7 @@ class UrbanFootprinter:
                 urban_mask, KERNEL_MOORE, iterations=iterations
             )
 
-        return urban_mask.astype(np.uint8)
+        return urban_mask.astype(self.mask_dtype)
 
     def compute_footprint_mask_shp(
         self,
