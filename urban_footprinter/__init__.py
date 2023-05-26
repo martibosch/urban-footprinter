@@ -20,7 +20,13 @@ class UrbanFootprinter:
     """Urban footprinter."""
 
     def __init__(
-        self, raster, urban_classes=None, res=None, lulc_dtype=None, mask_dtype=None
+        self,
+        raster,
+        urban_classes=None,
+        res=None,
+        convolve_border_type=None,
+        lulc_dtype=None,
+        mask_dtype=None,
     ):
         """Initialize the urban footprinter.
 
@@ -36,6 +42,11 @@ class UrbanFootprinter:
         res : numeric, optional
             Resolution of the `raster` (assumes square pixels). Ignored if `raster` is a
             path to a geotiff.
+        convolve_border_type : int, optional
+            The type of border to use when convolving the raster with the kernel. Must
+            be an integer corresponding to an opencv border type. See the opencv docs
+            for a list of possible values. If not provided, the default value from
+            `settings.DEFAULT_CONV_BORDER_TYPE` is used.
         lulc_dtype : str or numpy dtype, optional
             Data type to be used for the LULC array. It may need to be higher than the
             raster's original data type to avoid integer overflow when convolving the
@@ -54,6 +65,9 @@ class UrbanFootprinter:
                 res = src.res[0]  # only square pixels are supported
                 self.transform = src.transform
         self.res = res
+        if convolve_border_type is None:
+            convolve_border_type = settings.DEFAULT_CONV_BORDER_TYPE
+        self.convolve_border_type = convolve_border_type
         if lulc_dtype is None:
             lulc_dtype = settings.DEFAULT_LULC_DTYPE
         self.lulc_dtype = lulc_dtype
@@ -108,7 +122,12 @@ class UrbanFootprinter:
             kernel[mask] = 1
 
             # urban_mask = ndi.convolve(self.urban_lulc_arr, kernel)
-            urban_mask = cv2.filter2D(self.urban_lulc_arr, ddepth=-1, kernel=kernel)
+            urban_mask = cv2.filter2D(
+                self.urban_lulc_arr,
+                ddepth=-1,
+                kernel=kernel,
+                borderType=cv2.BORDER_REFLECT,
+            )
 
             # cache the convolution result
             self._convolution_result_dict[kernel_radius] = urban_mask
