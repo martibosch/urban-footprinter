@@ -11,7 +11,11 @@ from urban_footprinter import settings
 
 __version__ = "0.2.0"
 
-__all__ = ["UrbanFootprinter", "urban_footprint_mask", "urban_footprint_mask_shp"]
+__all__ = [
+    "UrbanFootprinter",
+    "urban_footprint_mask",
+    "urban_footprint_mask_shp",
+]
 
 KERNEL_MOORE = ndi.generate_binary_structure(2, 2)
 
@@ -136,7 +140,7 @@ class UrbanFootprinter:
             return urban_mask
 
     def compute_footprint_mask(
-        self, kernel_radius, urban_threshold, num_patches=1, buffer_dist=None
+        self, kernel_radius, urban_threshold, num_patches=None, buffer_dist=None
     ):
         """Compute a boolean mask of the urban footprint of a given raster.
 
@@ -149,8 +153,9 @@ class UrbanFootprinter:
             given pixel is considered urban.
         num_patches : int, default 1
             The number of urban patches that should be featured in the returned
-            urban/non-urban mask. If `None` or a value lower than one is provided, the
-            returned urban/non-urban mask will featuer all the urban patches.
+            urban/non-urban mask. If a value lower than one is provided, the returned
+            urban/non-urban mask will featuer all the urban patches. If no value is
+            provided, the default value from `settings.DEFAULT_NUM_PATCHES` is used.
         buffer_dist : numeric, optional
             Distance to be buffered around the urban/non-urban mask. If no value is
             provided, no buffer is applied.
