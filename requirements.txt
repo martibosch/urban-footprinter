@@ -1,5 +1,6 @@
 numpy >= 1.15
 opencv-python >= 4.0.0
+pandas >= 0.19.0  # only for is_list_like
 rasterio >= 1.0.0
 scipy >= 1.0.0
 shapely >= 1.0.0
