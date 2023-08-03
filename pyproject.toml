@@ -70,3 +70,12 @@ exclude_lines = [
 ]
 ignore_errors = true
 omit = ["tests/*", "docs/conf.py"]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_provider = "pep621"
+version_files = [
+    "urban_footprinter/__init__.py",
+    "pyproject.toml:version"
+]
