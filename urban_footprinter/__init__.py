@@ -1,4 +1,5 @@
 """Urban footprinter."""
+
 import cv2
 import numpy as np
 import rasterio as rio
@@ -59,6 +60,7 @@ class UrbanFootprinter:
         mask_dtype : str or numpy dtype, optional
             Data type to be used for the returned mask. If not provided, the default
             value from `settings.DEFAULT_MASK_DTYPE` is used.
+
         """
         if isinstance(raster, np.ndarray):
             if res is None:
@@ -106,6 +108,7 @@ class UrbanFootprinter:
         Returns
         -------
         convolution_result : ndarray
+
         """
         try:
             return self._convolution_result_dict[kernel_radius]
@@ -163,6 +166,7 @@ class UrbanFootprinter:
         Returns
         -------
         urban_mask : ndarray
+
         """
         kernel_pixel_radius = int(kernel_radius // self.res)
         kernel_pixel_len = 2 * kernel_pixel_radius + 1
@@ -228,6 +232,7 @@ class UrbanFootprinter:
         Returns
         -------
         urban_mask_geom : GeometryCollection
+
         """
         urban_mask = self.compute_footprint_mask(
             kernel_radius,
@@ -291,6 +296,7 @@ def urban_footprint_mask(
     Returns
     -------
     urban_mask : ndarray
+
     """
     return UrbanFootprinter(raster, urban_classes, res=res).compute_footprint_mask(
         kernel_radius, urban_threshold, num_patches=num_patches, buffer_dist=buffer_dist
@@ -330,6 +336,7 @@ def urban_footprint_mask_shp(
     Returns
     -------
     urban_mask_geom : geometry
+
     """
     return UrbanFootprinter(raster, urban_classes).compute_footprint_mask_shp(
         kernel_radius, urban_threshold, num_patches=num_patches, buffer_dist=buffer_dist
