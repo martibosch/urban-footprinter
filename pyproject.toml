@@ -40,7 +40,7 @@ Repository = "https://github.com/martibosch/urban-footprinter"
 
 [tool.codespell]
 ignore-words-list = "Makse"
-skip = "CHANGELOG.md"
+skip = "CHANGELOG.md,notebooks/overview.ipynb"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
