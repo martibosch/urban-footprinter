@@ -1,6 +1,6 @@
 [![PyPI version fury.io](https://badge.fury.io/py/urban-footprinter.svg)](https://pypi.python.org/pypi/urban-footprinter/)
 [![Documentation Status](https://readthedocs.org/projects/urban-footprinter/badge/?version=latest)](https://urban-footprinter.readthedocs.io/en/latest/?badge=latest)
-[![CI/CD](https://github.com/martibosch/urban-footprinter/actions/workflows/dev.yml/badge.svg)](https://github.com/martibosch/urban-footprinter/blob/main/.github/workflows/dev.yml)
+[![CI/CD](https://github.com/martibosch/urban-footprinter/actions/workflows/tests.yml/badge.svg)](https://github.com/martibosch/urban-footprinter/blob/main/.github/workflows/tests.yml)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/martibosch/urban-footprinter/main.svg)](https://results.pre-commit.ci/latest/github/martibosch/urban-footprinter/main)
 [![codecov](https://codecov.io/gh/martibosch/urban-footprinter/branch/main/graph/badge.svg?token=H8PW6I8DY5)](https://codecov.io/gh/martibosch/urban-footprinter)
 [![GitHub license](https://img.shields.io/github/license/martibosch/urban-footprinter.svg)](https://github.com/martibosch/urban-footprinter/blob/main/LICENSE)
@@ -80,7 +80,7 @@ urban_footprint_mask(raster, kernel_radius, urban_threshold, urban_classes=None,
     num_patches : int, default 1
         The number of urban patches that should be featured in the returned
         urban/non-urban mask. If `None` or a value lower than one is provided,
-        the returned urban/non-urban mask will featuer all the urban patches.
+        the returned urban/non-urban mask will features all the urban patches.
     buffer_dist : numeric, optional
         Distance to be buffered around the urban/non-urban mask. If no value is
         provided, no buffer is applied.

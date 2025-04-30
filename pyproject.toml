@@ -8,38 +8,62 @@ version = "0.3.0"
 description = "A convolution-based approach to detect urban extents."
 readme = "README.md"
 authors = [
-    { name = "Martí Bosch", email = "marti.bosch@epfl.ch" },
+  {name = "Martí Bosch", email = "marti.bosch@epfl.ch"}
 ]
-license = { text = "GPL-3.0" }
 classifiers = [
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Natural Language :: English",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13"
 ]
-requires-python = ">=3.8"
-dynamic = [
-	"dependencies"
+dependencies = [
+  "numpy >= 1.15",
+  "opencv-python >= 4.0.0",
+  "pandas >= 0.19.0", # only for is_list_like
+  "rasterio >= 1.0.0",
+  "scipy >= 1.0.0",
+  "shapely >= 1.0.0"
 ]
-
-[project.urls]
-Repository = "https://github.com/martibosch/urban-footprinter"
+requires-python = ">=3.10"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
 
 [project.optional-dependencies]
 test = ["black", "coverage[toml]", "pytest", "pytest-cov", "python-dotenv", "ruff"]
 dev = ["build", "commitizen", "pre-commit", "pip", "toml", "tox", "twine"]
 doc = ["myst-parser", "sphinx"]
 
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
-[tool.setuptools.packages.find]
-include = ["meteostations", "meteostations.*"]
+[project.urls]
+Repository = "https://github.com/martibosch/urban-footprinter"
 
-[tool.black]
-line-length = 88
+[tool.codespell]
+ignore-words-list = "Makse"
+skip = "CHANGELOG.md"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_provider = "pep621"
+version_files = [
+  "urban_footprinter/__init__.py",
+  "pyproject.toml:version"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "if self.debug:",
+  "pragma: no cover",
+  "raise NotImplementedError",
+  "except ModuleNotFoundError",
+  "except ImportError"
+]
+ignore_errors = true
+omit = ["tests/*", "docs/conf.py"]
+
+[tool.coverage.run]
+source = ["urban_footprinter"]
 
 [tool.ruff]
 line-length = 88
@@ -52,30 +76,61 @@ known-first-party = ["urban_footprinter"]
 "**/__init__.py" = ["F401"]
 "tests/test_urban_footprinter.py" = ["D"]
 
-[tool.nbqa.addopts]
-ruff = [
-    "--ignore=D,I"
+[tool.setuptools.packages.find]
+include = ["urban_footprinter", "urban_footprinter.*"]
+
+[tool.tox]
+env_list = [
+  "3.10",
+  "3.11",
+  "3.12",
+  "3.13",
+  "build"
+]
+requires = [
+  "tox>=4.19"
 ]
 
-[tool.coverage.run]
-source = ["urban_footprinter"]
-
-[tool.coverage.report]
-exclude_lines = [
-    "if self.debug:",
-    "pragma: no cover",
-    "raise NotImplementedError",
-    "except ModuleNotFoundError",
-    "except ImportError",
+[tool.tox.env.build]
+commands = [
+  ["python", "-m", "build"],
+  ["twine", "check", "dist/*"]
 ]
-ignore_errors = true
-omit = ["tests/*", "docs/conf.py"]
+extras = [
+  "dev",
+  "test"
+]
+whitelist_externals = [
+  "build",
+  "sphinx-build",
+  "twine"
+]
 
-[tool.commitizen]
-name = "cz_conventional_commits"
-tag_format = "v$version"
-version_provider = "pep621"
-version_files = [
-    "urban_footprinter/__init__.py",
-    "pyproject.toml:version"
+[tool.tox.env_run_base]
+commands = [
+  ["pytest", "-s", "--cov=urban_footprinter", "--cov-report=xml", "tests"]
+]
+conda_deps = [
+  "gdal>=3.3"
+]
+extras = [
+  "test"
+]
+whitelist_externals = [
+  "pytest"
+]
+
+[tool.tox.gh.python]
+"3.10" = [
+  "3.10"
+]
+"3.11" = [
+  "3.11"
+]
+"3.12" = [
+  "3.12"
+]
+"3.13" = [
+  "3.13",
+  "build"
 ]

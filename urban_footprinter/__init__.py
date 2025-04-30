@@ -1,4 +1,5 @@
 """Urban footprinter."""
+
 import cv2
 import numpy as np
 import rasterio as rio
@@ -59,6 +60,7 @@ class UrbanFootprinter:
         mask_dtype : str or numpy dtype, optional
             Data type to be used for the returned mask. If not provided, the default
             value from `settings.DEFAULT_MASK_DTYPE` is used.
+
         """
         if isinstance(raster, np.ndarray):
             if res is None:
@@ -106,6 +108,7 @@ class UrbanFootprinter:
         Returns
         -------
         convolution_result : ndarray
+
         """
         try:
             return self._convolution_result_dict[kernel_radius]
@@ -154,7 +157,7 @@ class UrbanFootprinter:
         num_patches : int, default 1
             The number of urban patches that should be featured in the returned
             urban/non-urban mask. If a value lower than one is provided, the returned
-            urban/non-urban mask will featuer all the urban patches. If no value is
+            urban/non-urban mask will feature all the urban patches. If no value is
             provided, the default value from `settings.DEFAULT_NUM_PATCHES` is used.
         buffer_dist : numeric, optional
             Distance to be buffered around the urban/non-urban mask. If no value is
@@ -163,6 +166,7 @@ class UrbanFootprinter:
         Returns
         -------
         urban_mask : ndarray
+
         """
         kernel_pixel_radius = int(kernel_radius // self.res)
         kernel_pixel_len = 2 * kernel_pixel_radius + 1
@@ -216,7 +220,7 @@ class UrbanFootprinter:
         num_patches : int, default 1
             The number of urban patches that should be featured in the returned
             urban/non-urban mask. If `None` or a value lower than one is provided, the
-            returned urban/non-urban mask will featuer all the urban patches.
+            returned urban/non-urban mask will feature all the urban patches.
         buffer_dist : numeric, optional
             Distance to be buffered around the urban/non-urban mask. If no value is
             provided, no buffer is applied.
@@ -228,6 +232,7 @@ class UrbanFootprinter:
         Returns
         -------
         urban_mask_geom : GeometryCollection
+
         """
         urban_mask = self.compute_footprint_mask(
             kernel_radius,
@@ -280,7 +285,7 @@ def urban_footprint_mask(
     num_patches : int, default 1
         The number of urban patches that should be featured in the returned
         urban/non-urban mask. If `None` or a value lower than one is provided, the
-        returned urban/non-urban mask will featuer all the urban patches.
+        returned urban/non-urban mask will feature all the urban patches.
     buffer_dist : numeric, optional
         Distance to be buffered around the urban/non-urban mask. If no value is
         provided, no buffer is applied.
@@ -291,6 +296,7 @@ def urban_footprint_mask(
     Returns
     -------
     urban_mask : ndarray
+
     """
     return UrbanFootprinter(raster, urban_classes, res=res).compute_footprint_mask(
         kernel_radius, urban_threshold, num_patches=num_patches, buffer_dist=buffer_dist
@@ -322,7 +328,7 @@ def urban_footprint_mask_shp(
     num_patches : int, default 1
         The number of urban patches that should be featured in the returned
         urban/non-urban mask. If `None` or a value lower than one is provided, the
-        returned urban/non-urban mask will featuer all the urban patches.
+        returned urban/non-urban mask will feature all the urban patches.
     buffer_dist : numeric, optional
         Distance to be buffered around the urban/non-urban mask. If no value is
         provided, no buffer is applied.
@@ -330,6 +336,7 @@ def urban_footprint_mask_shp(
     Returns
     -------
     urban_mask_geom : geometry
+
     """
     return UrbanFootprinter(raster, urban_classes).compute_footprint_mask_shp(
         kernel_radius, urban_threshold, num_patches=num_patches, buffer_dist=buffer_dist
