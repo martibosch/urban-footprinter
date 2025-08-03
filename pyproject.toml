@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.8.4,<0.9.0"]
+build-backend = "uv_build"
 
 [project]
 name = "urban-footprinter"
@@ -32,7 +32,7 @@ license-files = ["LICENSE"]
 
 [project.optional-dependencies]
 test = ["black", "coverage[toml]", "pytest", "pytest-cov", "python-dotenv", "ruff"]
-dev = ["build", "commitizen", "pre-commit", "pip", "toml", "tox", "twine"]
+dev = ["commitizen", "pre-commit", "pip", "toml", "tox", "twine", "uv"]
 doc = ["myst-parser", "sphinx"]
 
 [project.urls]
@@ -65,6 +65,30 @@ omit = ["tests/*", "docs/conf.py"]
 [tool.coverage.run]
 source = ["urban_footprinter"]
 
+[tool.pixi.dependencies]
+gdal = ">=3"
+pyproj = ">=3.7.2,<4"
+python = ">=3.10,<3.14"
+
+[tool.pixi.environments]
+dev = ["dev"]
+doc = ["doc"]
+test = ["test"]
+
+[tool.pixi.feature.dev.tasks]
+build = {cmd = "uv build"}
+check = {cmd = "twine check dist/*", depends-on = ["build"]}
+
+[tool.pixi.feature.doc.tasks]
+build-doc = {cmd = "sphinx-build docs docs/_build"}
+
+[tool.pixi.feature.test.tasks]
+test = {cmd = "pytest -s --cov=urban_footprinter --cov-report=xml tests"}
+
+[tool.pixi.workspace]
+name = "urban-footprinter"
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
+
 [tool.ruff]
 line-length = 88
 select = ["D", "E", "F", "I"]
@@ -76,61 +100,12 @@ known-first-party = ["urban_footprinter"]
 "**/__init__.py" = ["F401"]
 "tests/test_urban_footprinter.py" = ["D"]
 
-[tool.setuptools.packages.find]
-include = ["urban_footprinter", "urban_footprinter.*"]
+[tool.uv.build-backend]
+module-name = "urban_footprinter"
+module-root = ""
 
-[tool.tox]
-env_list = [
-  "3.10",
-  "3.11",
-  "3.12",
-  "3.13",
-  "build"
-]
-requires = [
-  "tox>=4.19"
-]
-
-[tool.tox.env.build]
-commands = [
-  ["python", "-m", "build"],
-  ["twine", "check", "dist/*"]
-]
-extras = [
-  "dev",
-  "test"
-]
-whitelist_externals = [
-  "build",
-  "sphinx-build",
-  "twine"
-]
-
-[tool.tox.env_run_base]
-commands = [
-  ["pytest", "-s", "--cov=urban_footprinter", "--cov-report=xml", "tests"]
-]
-conda_deps = [
-  "gdal>=3.3"
-]
-extras = [
-  "test"
-]
-whitelist_externals = [
-  "pytest"
-]
-
-[tool.tox.gh.python]
-"3.10" = [
-  "3.10"
-]
-"3.11" = [
-  "3.11"
-]
-"3.12" = [
-  "3.12"
-]
-"3.13" = [
-  "3.13",
-  "build"
-]
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true
