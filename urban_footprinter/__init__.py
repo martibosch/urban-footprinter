@@ -27,6 +27,7 @@ class UrbanFootprinter:
     def __init__(
         self,
         raster,
+        *,
         urban_classes=None,
         res=None,
         convolve_border_type=None,
@@ -143,7 +144,7 @@ class UrbanFootprinter:
             return urban_mask
 
     def compute_footprint_mask(
-        self, kernel_radius, urban_threshold, num_patches=None, buffer_dist=None
+        self, kernel_radius, urban_threshold, *, num_patches=None, buffer_dist=None
     ):
         """Compute a boolean mask of the urban footprint of a given raster.
 
@@ -204,6 +205,7 @@ class UrbanFootprinter:
         self,
         kernel_radius,
         urban_threshold,
+        *,
         num_patches=1,
         buffer_dist=None,
         transform=None,
@@ -261,6 +263,7 @@ def urban_footprint_mask(
     raster,
     kernel_radius,
     urban_threshold,
+    *,
     urban_classes=None,
     num_patches=1,
     buffer_dist=None,
@@ -298,7 +301,9 @@ def urban_footprint_mask(
     urban_mask : ndarray
 
     """
-    return UrbanFootprinter(raster, urban_classes, res=res).compute_footprint_mask(
+    return UrbanFootprinter(
+        raster, urban_classes=urban_classes, res=res
+    ).compute_footprint_mask(
         kernel_radius, urban_threshold, num_patches=num_patches, buffer_dist=buffer_dist
     )
 
@@ -307,6 +312,7 @@ def urban_footprint_mask_shp(
     raster,
     kernel_radius,
     urban_threshold,
+    *,
     urban_classes=None,
     num_patches=1,
     buffer_dist=None,
@@ -338,6 +344,8 @@ def urban_footprint_mask_shp(
     urban_mask_geom : geometry
 
     """
-    return UrbanFootprinter(raster, urban_classes).compute_footprint_mask_shp(
+    return UrbanFootprinter(
+        raster, urban_classes=urban_classes
+    ).compute_footprint_mask_shp(
         kernel_radius, urban_threshold, num_patches=num_patches, buffer_dist=buffer_dist
     )
