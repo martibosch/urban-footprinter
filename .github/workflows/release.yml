@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: artifact
           path: dist
@@ -79,7 +79,7 @@ jobs:
           body: ${{ steps.changelog.outputs.changes }}
           token: ${{ github.token }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: artifact
           path: dist
