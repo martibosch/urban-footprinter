@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "urban-footprinter"
-version = "0.3.1"
+version = "0.4.0"
 description = "A convolution-based approach to detect urban extents."
 readme = "README.md"
 authors = [
