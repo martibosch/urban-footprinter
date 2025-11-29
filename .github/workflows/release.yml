@@ -21,7 +21,7 @@ jobs:
       - name: build and check  # the `check` command depends on `build`
         run: pixi run -e dev check
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           path: dist/*
 
