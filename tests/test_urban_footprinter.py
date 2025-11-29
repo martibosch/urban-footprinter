@@ -112,15 +112,19 @@ class Test(unittest.TestCase):
         # test that when initializing the `UrbanFootprinter` class with an
         # ndarray we can provide the affine transform if we want to use the
         # `compute_footprint_mask_shp` method
+        kwargs = dict(
+            num_patches=1,
+            buffer_dist=1000,
+        )
         for uf in (
-            ufp.UrbanFootprinter(self.raster_arr, self.urban_classes, self.res),
-            ufp.UrbanFootprinter(self.raster_filepath, self.urban_classes),
+            ufp.UrbanFootprinter(
+                self.raster_arr, urban_classes=self.urban_classes, res=self.res
+            ),
+            ufp.UrbanFootprinter(
+                self.raster_filepath, urban_classes=self.urban_classes
+            ),
         ):
-            for transform in (self.transform, None):
+            for extra_kwargs in [dict(), dict(transform=self.transform)]:
                 uf.compute_footprint_mask_shp(
-                    self.kernel_radius,
-                    self.urban_threshold,
-                    num_patches=1,
-                    buffer_dist=1000,
-                    transform=transform,
+                    self.kernel_radius, self.urban_threshold, **(kwargs | extra_kwargs)
                 )

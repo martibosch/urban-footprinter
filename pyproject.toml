@@ -86,6 +86,7 @@ build-doc = {cmd = "sphinx-build docs docs/_build"}
 test = {cmd = "pytest -s --cov=urban_footprinter --cov-report=xml tests"}
 
 [tool.pixi.workspace]
+channels = ["conda-forge"]
 name = "urban-footprinter"
 platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
 

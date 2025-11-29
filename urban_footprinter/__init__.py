@@ -208,7 +208,7 @@ class UrbanFootprinter:
         *,
         num_patches=1,
         buffer_dist=None,
-        transform=None,
+        **shapes_kwargs,
     ):
         """Compute a geometry of the urban footprint of a given raster.
 
@@ -226,10 +226,8 @@ class UrbanFootprinter:
         buffer_dist : numeric, optional
             Distance to be buffered around the urban/non-urban mask. If no value is
             provided, no buffer is applied.
-        transform : Affine, optional
-            An affine transform matrix. Ignored if the instance was initialized with a
-            path to a geotiff. If no transform is available, the geometry features will
-            be generated based on pixel coordinates.
+        **shapes_kwargs : mapping
+            Additional keyword arguments to be passed to `rasterio.features.shapes`.
 
         Returns
         -------
@@ -243,17 +241,16 @@ class UrbanFootprinter:
             buffer_dist=buffer_dist,
         )
 
-        shapes_kws = {}
-        if hasattr(self, "transform"):
-            transform = self.transform
+        _shapes_kwargs = shapes_kwargs.copy()
+        transform = _shapes_kwargs.get("transform", getattr(self, "transform", None))
         if transform is not None:
-            shapes_kws["transform"] = transform
+            _shapes_kwargs["transform"] = transform
 
         return geometry.GeometryCollection(
             [
                 geometry.shape(geom)
                 for geom, val in features.shapes(
-                    urban_mask, mask=urban_mask, connectivity=8, **shapes_kws
+                    urban_mask, mask=urban_mask, connectivity=8, **shapes_kwargs
                 )
             ]
         )
@@ -316,6 +313,8 @@ def urban_footprint_mask_shp(
     urban_classes=None,
     num_patches=1,
     buffer_dist=None,
+    res=None,
+    **shapes_kwargs,
 ):
     """Compute a geometry of the urban footprint of a given raster.
 
@@ -338,6 +337,11 @@ def urban_footprint_mask_shp(
     buffer_dist : numeric, optional
         Distance to be buffered around the urban/non-urban mask. If no value is
         provided, no buffer is applied.
+    res : numeric, optional
+        Resolution of the `raster` (assumes square pixels). Ignored if `raster` is a
+        path to a geotiff.
+    **shapes_kwargs : mapping
+        Additional keyword arguments to be passed to `rasterio.features.shapes`.
 
     Returns
     -------
@@ -345,7 +349,11 @@ def urban_footprint_mask_shp(
 
     """
     return UrbanFootprinter(
-        raster, urban_classes=urban_classes
+        raster, urban_classes=urban_classes, res=res
     ).compute_footprint_mask_shp(
-        kernel_radius, urban_threshold, num_patches=num_patches, buffer_dist=buffer_dist
+        kernel_radius,
+        urban_threshold,
+        num_patches=num_patches,
+        buffer_dist=buffer_dist,
+        **shapes_kwargs,
     )
