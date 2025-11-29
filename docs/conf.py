@@ -2,13 +2,13 @@
 
 import os
 import sys
+from importlib import metadata
 
 project = "Urban footprinter"
 author = "Martí Bosch"
 
-__version__ = "0.2.0"
-version = __version__
-release = __version__
+release = metadata.version("urban_footprinter")
+version = ".".join(release.split(".")[:2])
 
 extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon", "myst_parser"]
 
