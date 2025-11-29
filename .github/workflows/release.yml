@@ -90,7 +90,7 @@ jobs:
           name: artifact
           path: dist
 
-      - name: publish to test pypi
+      - name: publish to pypi
         run: uv publish
 
       - name: pre-commit on changelog
